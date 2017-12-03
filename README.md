@@ -270,7 +270,7 @@ INSERT INTO `tasks` (`id`, `name`, `is_done`, `created_at`, `updated_at`) VALUES
 (2,'task b',1,'2017-12-01 17:07:29','2017-12-01 17:07:29');
 ```
 
-#### Map Task Entity
+#### Entity
 
 ```java
 package com.nasrulhazim.app.models;
@@ -316,7 +316,7 @@ public class Task implements Serializable {
 }
 ```
 
-#### Add Task Repository
+#### Repository
 
 ```java
 package com.nasrulhazim.app.controllers;
@@ -353,7 +353,7 @@ public class TaskController {
 }
 ```
 
-#### Add Task Seeder (optional)
+#### Seeder (optional)
 
 ```java
 package com.nasrulhazim.app.seeders;
