@@ -1,25 +1,25 @@
 package com.nasrulhazim.app.models;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import java.util.concurrent.atomic.AtomicInteger;
 
+@Entity
+@Table(name = "tasks")
 public class Task implements Serializable {
 
-	private static final AtomicInteger sequence = new AtomicInteger();
-
-	private int id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 
 	private String name;
 
 	private boolean is_done;
 
-	public Task(String name) {
-		this.id = sequence.incrementAndGet();
-		this.name = name;
+	public Task() {
 		this.is_done = false;
 	}
 
-	public int getId() {
+	public long getId() {
 		return this.id;
 	}
 
