@@ -538,5 +538,4 @@ public class BasicAuthenticationPoint extends BasicAuthenticationEntryPoint {
 
 ### TODO
 
-- [ ] auth (basic)
 - [ ] auth (jwt)
