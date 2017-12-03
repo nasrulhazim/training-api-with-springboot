@@ -191,6 +191,12 @@ public class TaskController {
         }
         return result;
     }
+    
+    @PostMapping("/tasks")
+    public List<Task> store(@RequestBody Task task) {
+        tasks.add(task);
+        return tasks;
+    }
 }
 ```
 
