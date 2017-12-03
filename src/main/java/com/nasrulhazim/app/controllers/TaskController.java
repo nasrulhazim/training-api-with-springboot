@@ -1,43 +1,32 @@
 package com.nasrulhazim.app.controllers;
 
 import com.nasrulhazim.app.models.Task;
+import com.nasrulhazim.app.repositories.TaskRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.ArrayList;
 
 @RestController
 public class TaskController {
-    private List<Task> tasks;
+    private TaskRepository taskRepository;
 
-    public TaskController() {
-        tasks = new ArrayList<>();
-
-        tasks.add(new Task("task 1"));
-        tasks.add(new Task("task 2"));
-        tasks.add(new Task("task 3"));
+    public TaskController(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
     }
 
     @GetMapping("/tasks")
     public List<Task> index() {
-        return tasks;
+        return taskRepository.findAll();
     }
 
     @GetMapping("/tasks/{id}")
-    public Task show(@PathVariable int id) {
-        Task result = null;
-        for (Task task : tasks) {
-            if (id == task.getId()) {
-                result = task;
-                break;
-            }
-        }
-        return result;
+    public Task show(@PathVariable long id) {
+        return taskRepository.findOne(id);
     }
 
     @PostMapping("/tasks")
     public List<Task> store(@RequestBody Task task) {
-        tasks.add(task);
-        return tasks;
+        taskRepository.save(task);
+        return taskRepository.findAll();
     }
 }
