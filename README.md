@@ -272,6 +272,8 @@ INSERT INTO `tasks` (`id`, `name`, `is_done`, `created_at`, `updated_at`) VALUES
 
 #### Entity
 
+> We going to map the entity / model to the table in our database.
+
 ```java
 package com.nasrulhazim.app.models;
 
@@ -317,6 +319,30 @@ public class Task implements Serializable {
 ```
 
 #### Repository
+
+> JPA Repositories. The Java Persistence API (JPA) is the standard way of persisting Java objects into relational databases. 
+
+The JPA consists of two parts: 
+
+1. A mapping subsystem to map classes onto relational tables 
+2. An EntityManager API to access the objects, define and execute queries, and more.
+
+```java
+package com.nasrulhazim.app.repositories;
+
+import com.nasrulhazim.app.models.Task;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface TaskRepository extends JpaRepository<Task, Long> { 
+    
+}
+```
+
+#### Controller
+
+> Use the repository to interact with out database.
 
 ```java
 package com.nasrulhazim.app.controllers;
