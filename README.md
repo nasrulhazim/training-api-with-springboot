@@ -405,6 +405,136 @@ public class TaskSeeder implements CommandLineRunner {
 }
 ```
 
+## Security
+
+We going to implement authentication in this section - Basic Authentication and JWT.
+
+### Basic Authentication
+
+Install the dependency - open `pom.xml`, and update the `<dependencies>` element.
+
+```xml
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+<dependency>
+    <groupId>javax.servlet</groupId>
+    <artifactId>javax.servlet-api</artifactId>
+    <version>3.1.0</version>
+</dependency>
+```
+
+Now build and run your application. Try to hit your browser / Postman on `http://localhost:8080/tasks`.
+
+You should received something like:
+
+```json
+{
+    "timestamp": 1512330753858,
+    "status": 401,
+    "error": "Unauthorized",
+    "message": "Full authentication is required to access this resource",
+    "path": "/tasks"
+}
+```
+
+Yes, that's correct. you get HTTP Status Code 401, which means unauthorized access.
+
+> You may read more details about HTTP Status Code [here](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html).
+
+Now create an `config/ApplicationConfig.java` and add the following:
+
+```java
+package com.nasrulhazim.app.config;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+
+@Configuration
+@EnableWebSecurity
+public class ApplicationConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private BasicAuthenticationPoint basicAuthenticationPoint;
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // Disable CSRF - this should for an API only
+        http.csrf()
+                .disable();
+
+        // permit access to landing page
+        http.authorizeRequests()
+                .antMatchers("/")
+                .permitAll()
+                .anyRequest()
+                .authenticated();
+
+        // Purpose of the BasicAuthenticationEntryPoint class is to set
+        // the "WWW-Authenticate" header to the response.
+        // So, web browsers will display a dialog to enter usename and password
+        // based on basic authentication mechanism(WWW-Authenticate header)
+        http.httpBasic()
+                .authenticationEntryPoint(basicAuthenticationPoint);
+    }
+
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        // added username, password, and userole for the in-memory user
+        auth.inMemoryAuthentication()
+                .withUser("nasrul")
+                .password("password")
+                .roles("USER");
+    }
+
+}
+```
+
+Then add `config/BasicAuthenticatoinPoint.java`:
+
+```java
+package com.nasrulhazim.app.config;
+
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+@Component
+public class BasicAuthenticationPoint extends BasicAuthenticationEntryPoint {
+
+    @Override
+    public void commence(HttpServletRequest request,
+                         HttpServletResponse response,
+                         AuthenticationException authEx)
+            throws IOException, ServletException {
+        response.addHeader("WWW-Authenticate", "Basic realm=" + getRealmName());
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        PrintWriter writer = response.getWriter();
+        writer.println("{ \"error\":\"" + authEx.getMessage() + "\",\"code\":\"401\"}");
+
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        setRealmName("Nasrul");
+        super.afterPropertiesSet();
+    }
+
+
+}
+```
 
 ### TODO
 
