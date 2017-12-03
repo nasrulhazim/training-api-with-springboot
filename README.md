@@ -270,11 +270,117 @@ INSERT INTO `tasks` (`id`, `name`, `is_done`, `created_at`, `updated_at`) VALUES
 (2,'task b',1,'2017-12-01 17:07:29','2017-12-01 17:07:29');
 ```
 
+#### Map Task Entity
+
+```java
+package com.nasrulhazim.app.models;
+
+import javax.persistence.*;
+import java.io.Serializable;
+
+@Entity
+@Table(name = "tasks")
+public class Task implements Serializable {
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
+
+	private String name;
+
+	private boolean is_done;
+
+	public Task() {
+		this.is_done = false;
+	}
+
+	public long getId() {
+		return this.id;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean getIsDone() {
+		return this.is_done;
+	}
+	
+	public void setIsDone(boolean is_done) {
+		this.is_done = is_done;
+	}
+}
+```
+
+#### Add Task Repository
+
+```java
+package com.nasrulhazim.app.controllers;
+
+import com.nasrulhazim.app.models.Task;
+import com.nasrulhazim.app.repositories.TaskRepository;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+public class TaskController {
+    private TaskRepository taskRepository;
+
+    public TaskController(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
+
+    @GetMapping("/tasks")
+    public List<Task> index() {
+        return taskRepository.findAll();
+    }
+
+    @GetMapping("/tasks/{id}")
+    public Task show(@PathVariable long id) {
+        return taskRepository.findOne(id);
+    }
+
+    @PostMapping("/tasks")
+    public List<Task> store(@RequestBody Task task) {
+        taskRepository.save(task);
+        return taskRepository.findAll();
+    }
+}
+```
+
+#### Add Task Seeder (optional)
+
+```java
+package com.nasrulhazim.app.seeders;
+
+import com.nasrulhazim.app.repositories.TaskRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+import java.util.logging.Logger;
+
+@Component
+public class TaskSeeder implements CommandLineRunner {
+    private TaskRepository taskRepository;
+
+    public TaskSeeder(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
+    }
+
+    @Override
+    public void run(String... strings) throws Exception {
+        Logger.getLogger("com.nasrulhazim.app.seeders.TaskSeeder").info("seeding default tasks...");
+        // do insert manually...
+    }
+}
+```
+
+
 ### TODO
 
-- [ ] queries on crud
-	- [ ] Model
-	- [ ] Controller
-	- [ ] Repository
 - [ ] auth (basic)
 - [ ] auth (jwt)
