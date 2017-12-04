@@ -536,6 +536,241 @@ public class BasicAuthenticationPoint extends BasicAuthenticationEntryPoint {
 }
 ```
 
-### TODO
+### JWT Authentication
 
-- [ ] auth (jwt)
+#### Preparation
+
+Create `users` table with following SQL command:
+
+```sql
+CREATE TABLE `users` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `avatar` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'image/default.png',
+  `verified` tinyint(1) NOT NULL DEFAULT 0,
+  `token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `users_email_unique` (`email`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+```
+
+Create a model for user `models/User.java`:
+
+```java
+package com.nasrulhazim.app.models;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
+
+@Entity
+@Table(name = "users")
+public class User implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "email")
+    private String email;
+
+    @Column(name = "password")
+    private String password;
+
+    @Column(name = "avatar")
+    private String avatar;
+
+    @Column(name = "verified")
+    private boolean verified;
+
+    @Column(name = "token")
+    private String token;
+
+    @Column(name = "remember_token")
+    private String remember_token;
+
+    private Date deleted_at;
+    private Date created_at;
+    private Date updated_at;
+
+    public long getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return this.password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getAvatar() {
+        return this.avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public boolean getVerified() {
+        return this.verified;
+    }
+
+    public void setVerified(boolean verified) {
+        this.verified = verified;
+    }
+
+    public String getToken() {
+        return this.token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public String getRememberToken() {
+        return this.remember_token;
+    }
+
+    public void setRememberToken(String remember_token) {
+        this.remember_token = remember_token;
+    }
+
+    public Date getDeletedAt() {
+        return this.deleted_at;
+    }
+
+    public void setDeletedAt(Date deleted_at) {
+        this.deleted_at = deleted_at;
+    }
+
+    public Date getCreatedAt() {
+        return this.created_at;
+    }
+
+    public void setCreatedAt(Date created_at) {
+        this.created_at = created_at;
+    }
+
+    public Date getUpdatedAt() {
+        return this.updated_at;
+    }
+
+    public void setUpdatedAt(Date updated_at) {
+        this.updated_at = updated_at;
+    }
+}
+```
+
+Create a repository for user, `repositories/UserRespository.java`:
+
+```java
+package com.nasrulhazim.app.repositories;
+
+import com.nasrulhazim.app.models.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Long>{
+}
+```
+
+Create a controller for user, `controllers/UserController.java`:
+
+```java
+package com.nasrulhazim.app.controllers;
+
+import com.nasrulhazim.app.models.User;
+import com.nasrulhazim.app.repositories.UserRepository;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+public class UserController {
+    private UserRepository userRepository;
+
+    public UserController(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping("/users")
+    public List<User> index() {
+        return userRepository.findAll();
+    }
+
+    @GetMapping("/users/{id}")
+    public User show(@PathVariable long id) {
+        return userRepository.findOne(id);
+    }
+
+    @PostMapping("/users")
+    public List<User> store(@RequestBody User user) {
+        userRepository.save(user);
+        return userRepository.findAll();
+    }
+}
+```
+
+Now create a new user using Postman:
+
+URL: `http://localhost:8080/sign-up`
+
+HTTP Method: `POST`
+
+Headers: `Content-Type` - `application/json`
+
+Content: `raw`
+
+```json
+{
+	"name":"nasrulhazim",
+	"password":"password",
+	"email":"nasrulhazim.m@gmail.com"
+}
+```
+
+#### Implementation
+
+Add dependency:
+
+```xml
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt</artifactId>
+    <version>0.9.0</version>
+</dependency>
+<dependency>
+    <groupId>com.fasterxml.jackson.core</groupId>
+    <artifactId>jackson-databind</artifactId>
+    <version>2.8.9</version>
+</dependency>
+```
+
+
