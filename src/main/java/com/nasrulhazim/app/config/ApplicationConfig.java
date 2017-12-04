@@ -22,7 +22,7 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
 
         // permit access to landing page
         http.authorizeRequests()
-                .antMatchers("/")
+                .antMatchers("/","/sign-up")
                 .permitAll()
                 .anyRequest()
                 .authenticated();
