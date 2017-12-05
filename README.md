@@ -405,6 +405,58 @@ public class TaskSeeder implements CommandLineRunner {
 }
 ```
 
+## Documentation
+
+Install the dependencies:
+
+```xml
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger2</artifactId>
+    <version>2.6.1</version>
+    <scope>compile</scope>
+</dependency>
+<dependency>
+    <groupId>io.springfox</groupId>
+    <artifactId>springfox-swagger-ui</artifactId>
+    <version>2.6.1</version>
+    <scope>compile</scope>
+</dependency>
+```
+
+Then add `Swagger` Configuration file by adding at `src/main/java/com/nasrulhazim/app/config/SwaggerConfiguration`:
+
+```java
+package com.nasrulhazim.app.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+import java.util.function.Predicate;
+
+@Configuration
+@EnableSwagger2
+public class SwaggerConfig {
+
+    @Bean
+    public Docket apiDoc()
+    {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.nasrulhazim.app"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+}
+```
+
+Once you have done setup you may go to the browser and go to `http://localhost:8080/swagger-ui.html/`.
+
 ## Security
 
 We going to implement authentication in this section - Basic Authentication and JWT.
@@ -467,14 +519,12 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
         // Disable CSRF - this should for an API only
         http.csrf()
                 .disable();
-
         // permit access to landing page
         http.authorizeRequests()
                 .antMatchers("/")
                 .permitAll()
                 .anyRequest()
                 .authenticated();
-
         // Purpose of the BasicAuthenticationEntryPoint class is to set
         // the "WWW-Authenticate" header to the response.
         // So, web browsers will display a dialog to enter usename and password
@@ -491,7 +541,6 @@ public class ApplicationConfig extends WebSecurityConfigurerAdapter {
                 .password("password")
                 .roles("USER");
     }
-
 }
 ```
 
@@ -523,7 +572,6 @@ public class BasicAuthenticationPoint extends BasicAuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         PrintWriter writer = response.getWriter();
         writer.println("{ \"error\":\"" + authEx.getMessage() + "\",\"code\":\"401\"}");
-
     }
 
     @Override
@@ -531,8 +579,6 @@ public class BasicAuthenticationPoint extends BasicAuthenticationEntryPoint {
         setRealmName("Nasrul");
         super.afterPropertiesSet();
     }
-
-
 }
 ```
 
