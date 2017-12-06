@@ -2,6 +2,7 @@ package com.nasrulhazim.app.controllers;
 
 import com.nasrulhazim.app.models.Task;
 import com.nasrulhazim.app.repositories.TaskRepository;
+import com.nasrulhazim.app.transformers.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,8 +41,15 @@ public class TaskController {
     }
 
     @DeleteMapping("/tasks/{id}")
-    public void delete(@PathVariable long id) {
+    public ApiResponse delete(@PathVariable long id) {
+        // Delete by Task Object
+        // Task task = taskRepository.findOne(id);
+        // taskRepository.delete(task);
+
+        // Delete by id, type of long
         taskRepository.delete(id);
+
+        return new ApiResponse("Task removed", "SUCCESS");
     }
 
 
