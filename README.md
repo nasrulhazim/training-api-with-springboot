@@ -1133,3 +1133,27 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 }
 ```
+
+### CORS
+
+Create a new config for CORS, `config/CorsConfig.java`:
+
+```java
+package com.nasrulhazim.app.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
+import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+@Configuration
+@EnableWebMvc
+public class CorsConfig extends WebMvcConfigurerAdapter {
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**");
+    }
+}
+```
