@@ -29,4 +29,11 @@ public class TaskController {
         taskRepository.save(task);
         return taskRepository.findAll();
     }
+
+    @PutMapping("/Tasks/{id}")
+    public Task update(@RequestBody Task task) {
+        // taskRepository... update..
+        return task;
+    }
+
 }
