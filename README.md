@@ -210,6 +210,8 @@ For the Update and Delete operation, I leave on purposed, as for assignment.
 
 ### With Database
 
+#### Using MySQL
+
 Add dependencies: `jpa`, `mysql`
 
 ```xml
@@ -224,7 +226,6 @@ Add dependencies: `jpa`, `mysql`
 ```
 
 Configure application by open up `src/main/resources/application.properties`:
-
 
 ```
 #spring.datasource.driver-class-name=com.mysql.jdbc.Driver
@@ -270,6 +271,28 @@ INSERT INTO `tasks` (`id`, `name`, `is_done`, `created_at`, `updated_at`) VALUES
 (2,'task b',1,'2017-12-01 17:07:29','2017-12-01 17:07:29');
 ```
 
+#### Using MSSQL
+
+```xml
+<dependency>
+   <groupId>com.microsoft.sqlserver</groupId>
+   <artifactId>mssql-jdbc</artifactId>
+   <version>6.1.0.jre8</version>
+</dependency>
+```
+
+The settings in `application.properties` for MSSQL:
+
+```
+spring.datasource.url=jdbc:sqlserver://localhost;databaseName=springboot
+spring.datasource.username=user
+spring.datasource.password=passwd
+spring.datasource.driverClassName=com.microsoft.sqlserver.jdbc.SQLServerDriver
+spring.jpa.show-sql=true
+spring.jpa.hibernate.dialect=org.hibernate.dialect.SQLServer2012Dialect
+spring.jpa.hibernate.ddl-auto=validate
+```
+
 #### Entity
 
 > We going to map the entity / model to the table in our database.
@@ -288,8 +311,10 @@ public class Task implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
+    @Column(name = "name")
 	private String name;
-
+    
+    @Column(name = "is_done")
 	private boolean is_done;
 
 	public Task() {
