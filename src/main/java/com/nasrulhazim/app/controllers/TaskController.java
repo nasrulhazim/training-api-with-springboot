@@ -30,10 +30,19 @@ public class TaskController {
         return taskRepository.findAll();
     }
 
-    @PutMapping("/Tasks/{id}")
-    public Task update(@RequestBody Task task) {
-        // taskRepository... update..
+    @PutMapping("/tasks/{id}")
+    public Task update(@PathVariable long id, @RequestBody Task request) {
+        Task task = taskRepository.findOne(id);
+        task.setIsDone(request.getIsDone());
+        task.setName(request.getName());
+        taskRepository.save(task);
         return task;
     }
+
+    @DeleteMapping("/tasks/{id}")
+    public void delete(@PathVariable long id) {
+        taskRepository.delete(id);
+    }
+
 
 }
