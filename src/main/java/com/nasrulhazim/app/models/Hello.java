@@ -10,6 +10,10 @@ public class Hello {
 		return this.name;
 	}
 
+	public String getVersion() {
+		return "1.0.0";
+	}
+
 	public String sayHello() {
 		return "Hello: " + this.name;
 	}

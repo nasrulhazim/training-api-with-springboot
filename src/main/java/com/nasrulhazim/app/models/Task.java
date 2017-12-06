@@ -11,8 +11,10 @@ public class Task implements Serializable {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long id;
 
+	@Column(name = "name")
 	private String name;
 
+	@Column(name = "is_done")
 	private boolean is_done;
 
 	public Task() {
